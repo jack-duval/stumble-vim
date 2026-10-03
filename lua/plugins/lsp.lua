@@ -42,28 +42,68 @@ return {
 
         vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { buffer = ev.buf, desc = "Previous Diagnostic" })
         vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { buffer = ev.buf, desc = "Next Diagnostic" })
-
         vim.keymap.set("n", "<leader>dq", vim.diagnostic.setqflist, { buffer = ev.buf, desc = "Quickfix Diagnostics" })
         vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist, { buffer = ev.buf, desc = "Location List Diagnostics" })
       end,
     })
 
-    -- helps find local binaries
-    local function resolve_cmd(bin, fallback)
+    -- Cross-Platform Binary Path Helper
+    local function resolve_cmd(bin, fallbacks)
       local path = vim.fn.exepath(bin)
       if path ~= "" then
         return path
       end
-      return fallback or bin
+      if type(fallbacks) == "table" then
+        for _, fallback in ipairs(fallbacks) do
+          local expanded = vim.fn.expand(fallback)
+          if vim.fn.executable(expanded) == 1 then
+            return expanded
+          end
+        end
+      elseif type(fallbacks) == "string" then
+        local expanded = vim.fn.expand(fallbacks)
+        if vim.fn.executable(expanded) == 1 then
+          return expanded
+        end
+      end
+      return bin
     end
 
-    local lua_cmd = resolve_cmd("lua-language-server", "/opt/homebrew/bin/lua-language-server")
-    local rust_cmd = resolve_cmd("rust-analyzer", vim.fn.expand("~/.cargo/bin/rust-analyzer"))
-    local zig_cmd = resolve_cmd("zls", "/opt/homebrew/bin/zls")
-    local pyright_cmd = resolve_cmd("basedpyright", "/opt/homebrew/bin/basedpyright")
-    local clangd_cmd = resolve_cmd("clangd", "/usr/bin/clangd")
+    -- OS-Agnostic Binaries (macOS + Ubuntu / Debian)
+    local lua_cmd = resolve_cmd("lua-language-server", {
+      "/opt/homebrew/bin/lua-language-server",
+      "/usr/bin/lua-language-server",
+      "/usr/local/bin/lua-language-server",
+    })
 
-    -- Helper to resolve Zig stdlib directory
+    local rust_cmd = resolve_cmd("rust-analyzer", {
+      "~/.cargo/bin/rust-analyzer",
+      "/usr/bin/rust-analyzer",
+      "/usr/local/bin/rust-analyzer",
+    })
+
+    local zig_cmd = resolve_cmd("zls", {
+      "/opt/homebrew/bin/zls",
+      "~/.zvm/bin/zls",
+      "~/.zvm/master/bin/zls",
+      "/usr/local/bin/zls",
+      "/usr/bin/zls",
+    })
+
+    local pyright_cmd = resolve_cmd("basedpyright", {
+      "/opt/homebrew/bin/basedpyright",
+      "~/.local/bin/basedpyright",
+      "/usr/bin/basedpyright",
+      "/usr/local/bin/basedpyright",
+    })
+
+    local clangd_cmd = resolve_cmd("clangd", {
+      "/usr/bin/clangd",
+      "/usr/local/bin/clangd",
+      "/opt/homebrew/opt/llvm/bin/clangd",
+    })
+
+    -- Helper to resolve Zig stdlib directory dynamically
     local function get_zig_lib_dir()
       local handle = io.popen("zig env 2>/dev/null")
       if not handle then return nil end
@@ -73,7 +113,7 @@ return {
       return lib_dir
     end
 
-    -- BEGIN INDIVIDUAL LANGUAGE SERVERS
+    -- BEGIN LANGUAGE SERVER SETUP
 
     -- Lua
     vim.lsp.config.lua_ls = {
@@ -123,7 +163,7 @@ return {
       settings = {
         zls = {
           zig_exe_path = vim.fn.exepath("zig"),
-          zig_lib_path = get_zig_lib_dir() or "~/.zvm/master/lib",
+          zig_lib_path = get_zig_lib_dir() or vim.fn.expand("~/.zvm/master/lib"),
         },
       },
     }
@@ -158,7 +198,6 @@ return {
       capabilities = capabilities,
     }
 
-    -- Inlay hints toggle
     vim.keymap.set("n", "<leader>th", function()
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
     end, { desc = "Toggle inlay hints" })
