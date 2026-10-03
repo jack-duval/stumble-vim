@@ -1,4 +1,4 @@
-# Custom Neovim Configuration
+# Stumble Vim
 
 Stumble Vim is a minimalist Neovim setup; intended for use on large codebases (and actually writing code).
 
