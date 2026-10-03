@@ -3,10 +3,10 @@ return {
   dependencies = { "nvim-tree/nvim-web-devicons" },
   opts = {
     options = {
-      theme = "auto", -- Automatically matches vim.g.colors_name
+      theme = "auto",
       component_separators = { left = "│", right = "│" },
       section_separators = { left = "", right = "" },
-      globalstatus = true, -- Single statusline across all splits
+      globalstatus = true,
     },
     sections = {
       lualine_a = { "mode" },

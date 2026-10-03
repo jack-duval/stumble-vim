@@ -24,3 +24,4 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
 })
 
 vim.g.netrw_banner = 0
+opt.updatetime = 200

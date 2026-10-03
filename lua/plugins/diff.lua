@@ -26,7 +26,7 @@ return {
     local diff = require("mini.diff")
     diff.setup(opts)
 
-    -- Custom keymaps for hunk navigation
+    -- Custom keymaps
     local map = vim.keymap.set
     map("n", "]h", function() diff.goto_hunk("next") end, { desc = "Next Git Hunk" })
     map("n", "[h", function() diff.goto_hunk("prev") end, { desc = "Previous Git Hunk" })

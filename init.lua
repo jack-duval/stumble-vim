@@ -1,4 +1,3 @@
--- To be moved later, blank slate for now!
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 

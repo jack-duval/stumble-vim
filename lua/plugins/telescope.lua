@@ -1,28 +1,59 @@
 return {
   "nvim-telescope/telescope.nvim",
-  branch = "master",
-  dependencies = { "nvim-lua/plenary.nvim" },
-  config = function()
-    local telescope = require("telescope")
-    local builtin = require("telescope.builtin")
-
-    telescope.setup({
-      defaults = {
-        -- Disable treesitter highlighting in the Telescope preview window
-        -- to prevent Neovim 0.11+ ft_to_lang API errors
-        preview = {
-          treesitter = false,
+  cmd = "Telescope",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    {
+      "nvim-telescope/telescope-fzf-native.nvim",
+      build = "make",
+    },
+  },
+  keys = {
+    { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
+    { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
+    { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Find buffers" },
+    { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
+    { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent files" },
+  },
+  opts = {
+    defaults = {
+      vimgrep_arguments = {
+        "rg",
+        "--color=never",
+        "--no-heading",
+        "--with-filename",
+        "--line-number",
+        "--column",
+        "--smart-case",
+        "--hidden",
+        "--glob=!**/.git/*",
+      },
+    },
+    pickers = {
+      find_files = {
+        find_command = {
+          "fd",
+          "--type",
+          "f",
+          "--hidden",
+          "--exclude",
+          ".git",
+          "--strip-cwd-prefix",
         },
       },
-    })
-
-    -- Telescope Keymaps
-    vim.keymap.set("n", "<leader>ff", function()
-        builtin.find_files({ hidden = true, no_ignore = false })
-    end, { desc = "Find workspace files" })
-    vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Grep workspace" })
-    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find open buffers" })
-    vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help tags" })
-    vim.keymap.set("n", "<leader>fs", builtin.lsp_workspace_symbols, { desc = "Find workspace symbols" })
+    },
+    extensions = {
+      fzf = {
+        fuzzy = true,
+        override_generic_sorter = true,
+        override_file_sorter = true,
+        case_mode = "smart_case",
+      },
+    },
+  },
+  config = function(_, opts)
+    local telescope = require("telescope")
+    telescope.setup(opts)
+    telescope.load_extension("fzf")
   end,
 }
