@@ -16,7 +16,7 @@ return {
       end,
     })
 
-    -- Go grab ginaries
+    -- Go grab binaries
     local lua_cmd = vim.fn.exepath("lua-language-server") ~= "" and "lua-language-server" or "/opt/homebrew/bin/lua-language-server"
     local rust_cmd = vim.fn.exepath("rust-analyzer") ~= "" and "rust-analyzer" or "~/.cargo/bin/rust-analyzer"
 

@@ -1,6 +1,6 @@
 return {
   "Saghen/blink.cmp",
-  version = "*", -- Downloads pre-built binaries for fast startup
+  version = "*",
   event = "InsertEnter",
   opts = {
     keymap = {

@@ -1,29 +1,31 @@
 return {
   "stevearc/oil.nvim",
+  lazy = false,
+  priority = 1000,
+  -- Global keymaps managed directly by lazy.nvim
+  keys = {
+    { "-", "<cmd>Oil<CR>", mode = "n", desc = "Open parent directory in Oil" },
+  },
   opts = {
-    -- Take over netrw entirely
     default_file_explorer = true,
-    -- Simple, familiar keymaps inside the Oil buffer
+    columns = {
+      "icon",
+    },
     keymaps = {
       ["g?"] = "actions.show_help",
       ["<CR>"] = "actions.select",
       ["-"] = "actions.parent",
       ["_"] = "actions.open_cwd",
-      ["<C-p>"] = "actions.preview",
-      ["<C-c>"] = "actions.close",
-    },
-    -- Keep columns minimal
-    columns = {
-      "icon",
+      ["gs"] = "actions.change_sort",
+      ["gx"] = "actions.open_external",
+      ["g."] = "actions.toggle_hidden",
     },
     view_options = {
       show_hidden = true,
     },
   },
-  -- Bind '-' in Normal mode to open Oil targeting the parent directory
-  keys = {
-    { "-", "<cmd>Oil<CR>", mode = "n", desc = "Open parent directory with Oil" },
-  },
-  -- Optional icon support (install nvim-web-devicons via Homebrew or Lazy if desired)
-  dependencies = { "nvim-tree/nvim-web-devicons" },
+  init = function()
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+  end,
 }
