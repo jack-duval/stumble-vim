@@ -19,11 +19,45 @@ map("n", "gj", "<C-w>j", { desc = "Move to lower split" })
 map("n", "gk", "<C-w>k", { desc = "Move to upper split" })
 map("n", "gl", "<C-w>l", { desc = "Move to right split" })
 
+-- Toggle KEYMAPS.md in a floating window
+map("n", "<leader>?", function()
+  local keymaps_path = vim.fn.stdpath("config") .. "/KEYMAPS.md"
+  if vim.fn.filereadable(keymaps_path) == 0 then
+    vim.notify("KEYMAPS.md not found in config directory", vim.log.levels.WARN)
+    return
+  end
 
-map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-map("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation" })
-map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
-map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
-map("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev Diagnostic" })
-map("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
+  local width = math.floor(vim.o.columns * 0.8)
+  local height = math.floor(vim.o.lines * 0.8)
+  local row = math.floor((vim.o.lines - height) / 2)
+  local col = math.floor((vim.o.columns - width) / 2)
 
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = "minimal",
+    border = "single",
+    title = " Neovim Keymaps Cheatsheet ",
+    title_pos = "center",
+  })
+
+  vim.cmd("read " .. vim.fn.fnameescape(keymaps_path))
+  vim.api.nvim_buf_set_lines(buf, 0, 1, false, {})
+
+  vim.bo[buf].filetype = "markdown"
+  vim.bo[buf].buftype = "nofile"
+  vim.bo[buf].bufhidden = "wipe"
+  vim.bo[buf].modifiable = false
+
+  vim.wo[win].number = false
+  vim.wo[win].relativenumber = false
+  vim.wo[win].wrap = true
+
+  local opts = { buffer = buf, silent = true }
+  vim.keymap.set("n", "q", "<cmd>close<CR>", opts)
+  vim.keymap.set("n", "<Esc>", "<cmd>close<CR>", opts)
+end, { desc = "Toggle Keymaps Cheatsheet" })

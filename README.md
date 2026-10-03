@@ -4,7 +4,7 @@ Stumble Vim is a minimalist Neovim setup; intended for use on large codebases (a
 
 It uses native LSP features, instead of Mason.
 
-See CHEATSHEET.md for keybindings!
+See KEYMAPS.md for keybindings, or hit `<leader>?`
 
 ---
 
