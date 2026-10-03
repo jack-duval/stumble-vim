@@ -49,4 +49,4 @@ The LSP configuration auto-resolves binary locations across default system paths
 
 1. **Clone the repository** to your Neovim config folder:
    ```bash
-   git clone <your-repository-url> ~/.config/nvim
+   git clone https://github.com/jack-duval/stumble-vim.git ~/.config/nvim
