@@ -1,0 +1,8 @@
+# Lazy.nvim lockfile (optional: commit if you want deterministic plugin versions, ignore if you want auto-updates)
+lazy-lock.json
+
+*.swp
+*.swo
+*~
+.DS_Store
+.netrwhist
